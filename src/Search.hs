@@ -10,6 +10,7 @@ import Data.Aeson
 import Data.ByteString.Lazy as BS
 import Data.Text as T
 import Text.XML.Generator
+import qualified Text.Fuzzy as Fuzzy
 
 data Board = Board
     { boardName :: Text
@@ -51,8 +52,6 @@ boardToElem b = xelem "item" (attr, elem)
         elem = xelem "title" $ xtext $ boardName b
 
 boardMatches :: Text -> Board -> Bool
-boardMatches q b = q' `T.isInfixOf` name
+boardMatches q b = Fuzzy.test q name
     where
-      q' = toUpper q
-      name = toUpper $ boardName b
-
+      name = boardName b

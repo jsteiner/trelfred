@@ -25,6 +25,7 @@ library
                      , bytestring
                      , text
                      , lens
+                     , fuzzy
   default-language:    Haskell2010
   extensions:          OverloadedStrings
 
