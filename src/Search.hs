@@ -24,16 +24,20 @@ instance FromJSON Board where
                             <*> v .: "url"
     parseJSON _          = mzero
 
-searchBoards :: String -> IO ()
-searchBoards q = do
+searchBoards :: Maybe String -> IO ()
+searchBoards mq = do
     json <- BS.readFile "boards.json"
     let mboards = decode json
-    let q' = T.pack q
-    let mmatching = List.filter (boardMatches q') <$> mboards
+    let mmatching = matchingBoards mboards mq
     printXML mmatching
 
-printXML :: Maybe [Board] -> IO ()
-printXML = BS.putStr . xrender . boardsToXML . fromMaybe []
+matchingBoards :: Maybe [Board] -> Maybe String -> [Board]
+matchingBoards Nothing _ = []
+matchingBoards (Just boards) Nothing = boards
+matchingBoards (Just boards) (Just q) = List.filter (boardMatches $ T.pack q) boards
+
+printXML :: [Board] -> IO ()
+printXML = BS.putStr . xrender . boardsToXML
 
 boardsToXML :: [Board] -> Xml Elem
 boardsToXML bs =

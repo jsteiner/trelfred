@@ -10,7 +10,7 @@ import Search (searchBoards)
 args :: Parser (IO ())
 args =
     subparser $
-        command "search" (info (searchBoards <$> argument str (metavar "QUERY")) idm) <>
+        command "search" (info (searchBoards <$> (optional $ argument str (metavar "QUERY"))) idm) <>
         command "cache"  (info (pure cacheBoards) (progDesc "foo"))
 
 main :: IO ()
