@@ -28,7 +28,7 @@ parseCommand :: Parser Command
 parseCommand =
     subparser $
         command "search" (parseSearch `withInfo` "Search for Trello boards") <>
-        command "cache"  (parseCache `withInfo` "Cache Trello boards")
+        command "cache"  (parseCache  `withInfo` "Cache Trello boards")
 
 parseSearch :: Parser Command
 parseSearch = Search <$> optional (argument str (metavar "QUERY"))

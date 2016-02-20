@@ -4,18 +4,17 @@ module Search
 
 import Control.Monad (mzero)
 import Data.Maybe (fromMaybe)
-import Data.List as List
 
 import Data.Aeson
-import Data.ByteString.Lazy as BS
-import Data.Text as T
+import qualified Data.ByteString.Lazy as BS
+import qualified Data.Text as T
 import Text.XML.Generator
 import qualified Text.Fuzzy as Fuzzy
 
 data Board = Board
-    { boardName :: Text
-    , boardId :: Text
-    , boardUrl :: Text
+    { boardName :: T.Text
+    , boardId :: T.Text
+    , boardUrl :: T.Text
     } deriving (Show)
 
 instance FromJSON Board where
@@ -29,13 +28,12 @@ searchBoards :: Maybe String -> IO ()
 searchBoards mq = do
     json <- BS.readFile "boards.json"
     let mboards = decode json
-    let mmatching = matchingBoards mboards mq
-    printXML mmatching
+    printXML $ matchingBoards mboards mq
 
 matchingBoards :: Maybe [Board] -> Maybe String -> [Board]
 matchingBoards Nothing _ = []
 matchingBoards (Just boards) Nothing = boards
-matchingBoards (Just boards) (Just q) = List.filter (boardMatches $ T.pack q) boards
+matchingBoards (Just boards) (Just q) = filter (boardMatches $ T.pack q) boards
 
 printXML :: [Board] -> IO ()
 printXML = BS.putStr . xrender . boardsToXML
@@ -51,7 +49,5 @@ boardToElem b = xelem "item" (attr, elem)
         attr = xattr "arg" $ boardUrl b
         elem = xelem "title" $ xtext $ boardName b
 
-boardMatches :: Text -> Board -> Bool
-boardMatches q b = Fuzzy.test q name
-    where
-      name = boardName b
+boardMatches :: T.Text -> Board -> Bool
+boardMatches q b = Fuzzy.test q $ boardName b

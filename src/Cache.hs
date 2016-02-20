@@ -34,14 +34,14 @@ getCredentials =
 opts :: Credentials -> Options
 opts (Credentials apiKey apiToken _) =
     defaults & param "key"   .~ [T.pack apiKey]
-             & param "token"   .~ [T.pack apiToken]
+             & param "token" .~ [T.pack apiToken]
 
 boardsEndpoint :: String -> String
 boardsEndpoint u =
     "https://api.trello.com/1/members/" ++ u ++ "/boards?filter=open"
 
 writeResponse :: Options -> String -> IO ()
-writeResponse o e = do
-    r <- getWith o e
+writeResponse options endpoint = do
+    r <- getWith options endpoint
     let json = r ^. responseBody
     BS.writeFile "boards.json" json
