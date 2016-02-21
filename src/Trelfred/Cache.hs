@@ -1,4 +1,4 @@
-module Cache
+module Trelfred.Cache
     ( cacheBoards
     ) where
 

@@ -4,8 +4,8 @@ import Control.Monad (join)
 
 import Options.Applicative
 
-import Cache (cacheBoards)
-import Search (searchBoards)
+import Trelfred.Cache (cacheBoards)
+import Trelfred.Search (searchBoards)
 
 data Command
     = Search (Maybe String)

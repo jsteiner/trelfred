@@ -1,8 +1,7 @@
-module Search
+module Trelfred.Search
     ( searchBoards
     ) where
 
-import Control.Monad (mzero)
 import Data.Maybe (fromMaybe)
 
 import Data.Aeson
@@ -11,18 +10,7 @@ import qualified Data.Text as T
 import Text.XML.Generator
 import qualified Text.Fuzzy as Fuzzy
 
-data Board = Board
-    { boardName :: T.Text
-    , boardId :: T.Text
-    , boardUrl :: T.Text
-    } deriving (Show)
-
-instance FromJSON Board where
-    parseJSON (Object v) = Board
-                            <$> v .: "name"
-                            <*> v .: "id"
-                            <*> v .: "url"
-    parseJSON _          = mzero
+import Trelfred.Board
 
 searchBoards :: Maybe String -> IO ()
 searchBoards mq = do
@@ -44,10 +32,11 @@ boardsToXML bs =
         xelems $ boardToElem <$> bs
 
 boardToElem :: Board -> Xml Elem
-boardToElem b = xelem "item" (attr, elem)
+boardToElem (Board name _ url) =
+    xelem "item" (attr, elem)
     where
-        attr = xattr "arg" $ boardUrl b
-        elem = xelem "title" $ xtext $ boardName b
+        attr = xattr "arg" url
+        elem = xelem "title" $ xtext name
 
 boardMatches :: T.Text -> Board -> Bool
 boardMatches q b = Fuzzy.test q $ boardName b
