@@ -1,14 +1,21 @@
 module Trelfred.Cache
     ( cacheBoards
+    , cacheFile
+    , writeBoards
     ) where
 
 import System.Environment (getEnv)
+import Control.Exception (throwIO)
 
+import Data.Aeson (eitherDecode)
+import Data.Csv (encodeDefaultOrderedByName)
 import qualified Data.Text as T
 import qualified Data.ByteString.Lazy as BS
 import Control.Lens ((.~), (^.), (&))
 import LoadEnv (loadEnv)
 import Network.Wreq
+
+import Trelfred.Board
 
 data Credentials = Credentials
     { apiKey :: String
@@ -40,8 +47,18 @@ boardsEndpoint :: String -> String
 boardsEndpoint u =
     "https://api.trello.com/1/members/" ++ u ++ "/boards?filter=open"
 
+cacheFile :: String
+cacheFile = "boards.csv"
+
 writeResponse :: Options -> String -> IO ()
 writeResponse options endpoint = do
     r <- getWith options endpoint
     let json = r ^. responseBody
-    BS.writeFile "boards.json" json
+    let result = eitherDecode json :: Either String [Board]
+    case result of
+        Left e -> throwIO (userError e)
+        Right boards -> writeBoards boards
+
+
+writeBoards :: [Board] -> IO ()
+writeBoards = BS.writeFile cacheFile . encodeDefaultOrderedByName

@@ -18,6 +18,7 @@ library
   exposed-modules:     Trelfred.Cache
                      , Trelfred.Board
                      , Trelfred.Search
+                     , Trelfred.Increment
   build-depends:       base >= 4.7 && < 5
                      , wreq
                      , xmlgen
@@ -27,6 +28,8 @@ library
                      , text
                      , lens
                      , fuzzy
+                     , cassava
+                     , vector
   default-language:    Haskell2010
   extensions:          OverloadedStrings
 
@@ -36,6 +39,7 @@ executable trelfred
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
                      , optparse-applicative
+                     , text
                      , trelfred
   default-language:    Haskell2010
 
