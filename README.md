@@ -14,7 +14,8 @@ Supports the following commands:
    ```
 
 1. Search Trello boards: returns all boards matching the given query in
-   Alfred's XML format
+   Alfred's XML format. It will automatically cache Trello boards for you if no
+   cache file exists.
 
    ```
    $ trelfred search foobar

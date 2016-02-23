@@ -7,6 +7,7 @@ import Data.Maybe (fromMaybe)
 import Data.Function (on)
 import Control.Exception (throwIO)
 import qualified Data.List as L
+import System.Directory (doesFileExist)
 
 import Data.Csv (decodeByName, Header)
 import qualified Data.Vector as V
@@ -15,7 +16,7 @@ import qualified Data.Text as T
 import Text.XML.Generator
 import qualified Text.Fuzzy as Fuzzy
 
-import Trelfred.Cache (cacheFile)
+import Trelfred.Cache
 import Trelfred.Board
 
 searchBoards :: Maybe String -> IO ()
@@ -30,6 +31,14 @@ sortByHits = L.sortBy comparator
 
 getBoards :: IO (V.Vector Board)
 getBoards = do
+    fileExists <- doesFileExist cacheFile
+    if fileExists then
+      getBoardsFromCache
+    else
+      cacheBoards >> getBoardsFromCache
+
+getBoardsFromCache :: IO (V.Vector Board)
+getBoardsFromCache = do
     json <- BS.readFile cacheFile
     let result = decodeByName json :: Either String (Header, V.Vector Board)
     case result of
