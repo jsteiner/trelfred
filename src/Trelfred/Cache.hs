@@ -59,6 +59,5 @@ writeResponse options endpoint = do
         Left e -> throwIO (userError e)
         Right boards -> writeBoards boards
 
-
 writeBoards :: [Board] -> IO ()
 writeBoards = BS.writeFile cacheFile . encodeDefaultOrderedByName
