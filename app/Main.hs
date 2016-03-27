@@ -6,10 +6,7 @@ import Options.Applicative
 import qualified Data.Text as T
 
 import Trelfred.Request
-import Alfred.Item
-import Alfred.Search
-import Alfred.Increment
-import Alfred.Cache
+import qualified Alfred as A
 
 data Command
     = Search (Maybe String)
@@ -23,11 +20,11 @@ main = run =<< execParser
 run :: Command -> IO ()
 run cmd =
     case cmd of
-        Search mquery -> searchItems cacheFile mquery
+        Search mquery -> A.searchItems cacheFile mquery
         Cache         -> do
-            boards <- getBoards
-            writeItems cacheFile $ fmap toAlfredItem boards
-        Increment url -> incrementVisits cacheFile $ T.pack url
+                            boards <- getBoards
+                            A.writeItems cacheFile $ fmap A.toAlfredItem boards
+        Increment url -> A.incrementVisits cacheFile $ T.pack url
 
 withInfo :: Parser a -> String -> ParserInfo a
 withInfo opts desc = info (helper <*> opts) $ progDesc desc

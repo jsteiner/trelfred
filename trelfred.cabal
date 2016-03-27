@@ -17,24 +17,16 @@ library
   hs-source-dirs:      src
   exposed-modules:     Trelfred.Request
                      , Trelfred.Board
-                     , Alfred.Search
-                     , Alfred.Item
-                     , Alfred.Increment
-                     , Alfred.Cache
   build-depends:       base >= 4.7 && < 5
                      , wreq
-                     , xmlgen
                      , aeson
                      , load-env
                      , bytestring
                      , text
                      , lens
-                     , fuzzy
-                     , cassava
-                     , vector
-                     , directory
+                     , alfred-workflow-cache
   default-language:    Haskell2010
-  extensions:          OverloadedStrings
+  default-extensions:          OverloadedStrings
 
 executable trelfred
   hs-source-dirs:      app
@@ -44,6 +36,7 @@ executable trelfred
                      , optparse-applicative
                      , text
                      , trelfred
+                     , alfred-workflow-cache
   default-language:    Haskell2010
 
 test-suite trelfred-test

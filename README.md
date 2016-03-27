@@ -14,8 +14,7 @@ Supports the following commands:
    ```
 
 1. Search Trello boards: returns all boards matching the given query in
-   Alfred's XML format. It will automatically cache Trello boards for you if no
-   cache file exists.
+   Alfred's XML format.
 
    ```
    $ trelfred search foobar
@@ -37,3 +36,8 @@ TRELLO_USERNAME=your-username
 TRELLO_API_KEY=your-developer-key
 TRELLO_API_TOKEN=your-trello-token
 ```
+
+## License
+
+Trelfred is Copyright © 2016 Josh Steiner. It is free software, and
+may be redistributed under the terms specified in the LICENSE file.

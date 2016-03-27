@@ -6,7 +6,6 @@ import Control.Monad (mzero)
 
 import Data.Aeson
 import qualified Data.Text as T
-
 import qualified Alfred.Item as A
 
 data Board = Board
