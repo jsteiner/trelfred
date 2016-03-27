@@ -5,9 +5,11 @@ import Control.Monad (join)
 import Options.Applicative
 import qualified Data.Text as T
 
-import Trelfred.Cache (cacheBoards)
-import Trelfred.Search (searchBoards)
-import Trelfred.Increment (incrementVisits)
+import Trelfred.Request
+import Alfred.Item
+import Alfred.Search
+import Alfred.Increment
+import Alfred.Cache
 
 data Command
     = Search (Maybe String)
@@ -21,9 +23,11 @@ main = run =<< execParser
 run :: Command -> IO ()
 run cmd =
     case cmd of
-        Search mquery -> searchBoards mquery
-        Cache         -> cacheBoards
-        Increment url -> incrementVisits $ T.pack url
+        Search mquery -> searchItems cacheFile mquery
+        Cache         -> do
+            boards <- getBoards
+            writeItems cacheFile $ fmap toAlfredItem boards
+        Increment url -> incrementVisits cacheFile $ T.pack url
 
 withInfo :: Parser a -> String -> ParserInfo a
 withInfo opts desc = info (helper <*> opts) $ progDesc desc
@@ -43,3 +47,6 @@ parseCache = pure Cache
 
 parseIncrement :: Parser Command
 parseIncrement = Increment <$> argument str (metavar "BOARD_URL")
+
+cacheFile :: String
+cacheFile = "boards.csv"

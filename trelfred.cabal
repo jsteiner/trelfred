@@ -15,10 +15,12 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Trelfred.Cache
+  exposed-modules:     Trelfred.Request
                      , Trelfred.Board
-                     , Trelfred.Search
-                     , Trelfred.Increment
+                     , Alfred.Search
+                     , Alfred.Item
+                     , Alfred.Increment
+                     , Alfred.Cache
   build-depends:       base >= 4.7 && < 5
                      , wreq
                      , xmlgen

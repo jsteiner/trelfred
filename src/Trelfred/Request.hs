@@ -1,16 +1,12 @@
-module Trelfred.Cache
-    ( cacheBoards
-    , cacheFile
-    , writeBoards
+module Trelfred.Request
+    ( getBoards
     ) where
 
 import System.Environment (getEnv)
 import Control.Exception (throwIO)
 
 import Data.Aeson (eitherDecode)
-import Data.Csv (encodeDefaultOrderedByName)
 import qualified Data.Text as T
-import qualified Data.ByteString.Lazy as BS
 import Control.Lens ((.~), (^.), (&))
 import LoadEnv (loadEnv)
 import Network.Wreq
@@ -23,13 +19,23 @@ data Credentials = Credentials
     , username :: String
     }
 
-cacheBoards :: IO ()
-cacheBoards = do
+getBoards :: IO [Board]
+getBoards = do
     loadEnv
     c <- getCredentials
     let opts' = opts c
     let endpoint = boardsEndpoint $ username c
-    writeResponse opts' endpoint
+    requestBoards opts' endpoint
+
+requestBoards :: Options -> String -> IO [Board]
+requestBoards options endpoint = do
+    r <- getWith options endpoint
+    let json = r ^. responseBody
+    let result = eitherDecode json :: Either String [Board]
+
+    case result of
+        Left e -> throwIO (userError e)
+        Right boards -> return boards
 
 getCredentials :: IO Credentials
 getCredentials =
@@ -46,18 +52,3 @@ opts (Credentials apiKey apiToken _) =
 boardsEndpoint :: String -> String
 boardsEndpoint u =
     "https://api.trello.com/1/members/" ++ u ++ "/boards?filter=open"
-
-cacheFile :: String
-cacheFile = "boards.csv"
-
-writeResponse :: Options -> String -> IO ()
-writeResponse options endpoint = do
-    r <- getWith options endpoint
-    let json = r ^. responseBody
-    let result = eitherDecode json :: Either String [Board]
-    case result of
-        Left e -> throwIO (userError e)
-        Right boards -> writeBoards boards
-
-writeBoards :: [Board] -> IO ()
-writeBoards = BS.writeFile cacheFile . encodeDefaultOrderedByName
