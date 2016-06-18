@@ -20,33 +20,22 @@ library
   build-depends:       base >= 4.7 && < 5
                      , wreq
                      , aeson
-                     , load-env
-                     , bytestring
                      , text
                      , lens
-                     , alfred-workflow-cache
+                     , bytestring
+                     , unordered-containers
   default-language:    Haskell2010
-  default-extensions:          OverloadedStrings
+  default-extensions:  OverloadedStrings
+  ghc-options:   -Wall -Werror -fwarn-tabs -O2
 
-executable trelfred
+executable trelfred-cache
   hs-source-dirs:      app
   main-is:             Main.hs
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
-                     , optparse-applicative
-                     , text
                      , trelfred
-                     , alfred-workflow-cache
   default-language:    Haskell2010
-
-test-suite trelfred-test
-  type:                exitcode-stdio-1.0
-  hs-source-dirs:      test
-  main-is:             Spec.hs
-  build-depends:       base
-                     , trelfred
-  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
-  default-language:    Haskell2010
+  ghc-options:   -Wall -Werror -fwarn-tabs -O2
 
 source-repository head
   type:     git

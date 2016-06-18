@@ -1,37 +1,46 @@
 module Trelfred.Request
-    ( getBoards
+    ( cacheBoards
     ) where
 
 import System.Environment (getEnv)
 import Control.Exception (throwIO)
 
-import Data.Aeson (eitherDecode)
-import qualified Data.Text as T
 import Control.Lens ((.~), (^.), (&))
-import LoadEnv (loadEnv)
-import Network.Wreq
+import qualified Network.Wreq as W
+import qualified Data.Aeson as Aeson
+import qualified Data.Text as T
+import qualified Data.ByteString.Lazy.Char8 as BS
+import qualified Data.HashMap.Strict as Map
 
 import Trelfred.Board
 
 data Credentials = Credentials
-    { apiKey :: String
-    , apiToken :: String
+    { _apiKey :: String
+    , _apiToken :: String
     , username :: String
     }
 
+cacheBoards :: IO ()
+cacheBoards = do
+    boards <- getBoards
+    let jsonOut = Aeson.encode $ wrapBoards boards
+    BS.writeFile cacheFile jsonOut
+
+wrapBoards :: [Board] -> Map.HashMap T.Text [Board]
+wrapBoards bs = Map.fromList [ ("items", bs) ]
+
 getBoards :: IO [Board]
 getBoards = do
-    loadEnv
     c <- getCredentials
     let opts' = opts c
     let endpoint = boardsEndpoint $ username c
     requestBoards opts' endpoint
 
-requestBoards :: Options -> String -> IO [Board]
+requestBoards :: W.Options -> String -> IO [Board]
 requestBoards options endpoint = do
-    r <- getWith options endpoint
-    let json = r ^. responseBody
-    let result = eitherDecode json :: Either String [Board]
+    r <- W.getWith options endpoint
+    let json = r ^. W.responseBody
+    let result = Aeson.eitherDecode json :: Either String [Board]
 
     case result of
         Left e -> throwIO (userError e)
@@ -44,11 +53,14 @@ getCredentials =
         <*> getEnv "TRELLO_API_TOKEN"
         <*> getEnv "TRELLO_USERNAME"
 
-opts :: Credentials -> Options
+opts :: Credentials -> W.Options
 opts (Credentials apiKey apiToken _) =
-    defaults & param "key"   .~ [T.pack apiKey]
-             & param "token" .~ [T.pack apiToken]
+    W.defaults & W.param "key"   .~ [T.pack apiKey]
+               & W.param "token" .~ [T.pack apiToken]
 
 boardsEndpoint :: String -> String
 boardsEndpoint u =
     "https://api.trello.com/1/members/" ++ u ++ "/boards?filter=open"
+
+cacheFile :: String
+cacheFile = "cache.json"

@@ -6,22 +6,25 @@ import Control.Monad (mzero)
 
 import Data.Aeson
 import qualified Data.Text as T
-import qualified Alfred.Item as A
 
 data Board = Board
-    { boardName :: T.Text
+    { boardId :: T.Text
+    , boardName :: T.Text
     , boardUrl :: T.Text
-    , visits :: Int
     } deriving (Show)
 
 instance FromJSON Board where
-    parseJSON (Object v) = do
-        name <- v .: "name"
-        url <- v .: "url"
-
-        return $ Board name url 0
-
+    parseJSON (Object b) =
+        Board
+        <$> b .: "id"
+        <*> b .: "name"
+        <*> b .: "url"
     parseJSON _ = mzero
 
-instance A.ToAlfredItem Board where
-    toAlfredItem (Board name url visits) = A.Item name url visits
+instance ToJSON Board where
+    toJSON (Board bid name url) =
+        object
+            [ "uid" .= bid
+            , "title" .= name
+            , "arg" .= url
+            ]

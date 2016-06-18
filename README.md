@@ -1,41 +1,27 @@
 # Trelfred
 
-A CLI for searching [Trello] boards, formatted for [Alfred].
+A CLI for caching [Trello] boards. Writes a JSON file structured for [Alfred].
 
 [Trello]: https://trello.com
 [Alfred]: https://www.alfredapp.com/
 
-Supports the following commands:
+## Trelfred Workflow
 
-1. Cache Trello boards: stores board data in a CSV file in the current directory
+Trelfred is used by the [Trelfred Workflow]. It looks something like this:
 
-   ```
-   $ trelfred cache
-   ```
+![Trelfred demo](https://cloud.githubusercontent.com/assets/466493/14092917/223ea38e-f518-11e5-9ced-0ef55bb2cad9.gif)
 
-1. Search Trello boards: returns all boards matching the given query in
-   Alfred's XML format.
+[Trelfred Workflow]: https://github.com/jsteiner/trelfred-cache/releases
 
-   ```
-   $ trelfred search foobar
-   ```
+## Setup
 
-1. Increment board visits: used to sort boards by frequency of visits
+Trelfred expects the following ENV variables to be exported:
 
-   ```
-   trelfred increment https://trello.com/b/board-id/board-name
-   ```
+* `TRELLO_USERNAME` - your username
+* `TRELLO_API_KEY` - Get [here](https://trello.com/1/appKey/generate).
+* `TRELLO_API_TOKEN` - Visit the following URL **replacing the api key** in the URL:
 
-## Credentials
-
-Trelfred expects credentials be exposed in a `.env` file in the current
-directory. The file should have the following structure / keys:
-
-```
-TRELLO_USERNAME=your-username
-TRELLO_API_KEY=your-developer-key
-TRELLO_API_TOKEN=your-trello-token
-```
+        https://trello.com/1/authorize?key=REPLACE_WITH_YOUR_DEVELOPER_KEY&name=Trelfred&expiration=never&response_type=token
 
 ## License
 
